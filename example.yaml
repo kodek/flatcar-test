@@ -27,7 +27,7 @@ systemd:
             --privileged \
             -v /home/kodek/portainer/data:/data \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            portainer/portainer-ce
+            portainer/portainer-ee:latest
         ExecStop=/usr/bin/docker stop portainer
         Restart=always
         RestartSec=5s
