@@ -1,0 +1,35 @@
+---
+variant: flatcar
+version: 1.0.0
+passwd:
+  users:
+    - name: kodek
+      ssh_authorized_keys:
+        # From https://github.com/kodek.keys
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGZofYiTU6aQbhG/zQLUqOMm9CrZFd2fTa80432tUIpY
+      groups: [ sudo, docker ]
+
+systemd:
+  units:
+    - name: portainer.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Portainer
+        After=docker.service
+        Requires=docker.service
+        [Service]
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker rm --force portainer
+        ExecStart=/usr/bin/docker run --name=portainer \
+            --pull always \
+            --net=host \
+            --privileged \
+            -v /home/kodek/portainer/data:/data \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            portainer/portainer-ce
+        ExecStop=/usr/bin/docker stop portainer
+        Restart=always
+        RestartSec=5s
+        [Install]
+        WantedBy=multi-user.target
